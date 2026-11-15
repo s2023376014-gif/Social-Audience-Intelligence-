@@ -1,0 +1,15 @@
+pandas>=2.0
+numpy>=1.24
+scipy>=1.10
+scikit-learn>=1.3
+joblib>=1.3
+sqlalchemy>=2.0
+openpyxl>=3.1
+plotly>=5.18
+streamlit>=1.32
+reportlab>=4.0
+matplotlib>=3.7
+pytest>=7.0
+# Semantic embeddings (recommended). ~200 MB download incl. PyTorch; the model (~90 MB) downloads on first use.
+# If this line fails or you are offline, the app automatically falls back to TF-IDF character n-grams.
+sentence-transformers>=2.7
