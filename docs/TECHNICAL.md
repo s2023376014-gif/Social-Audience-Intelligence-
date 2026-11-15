@@ -1,0 +1,5 @@
+# Technical documentation
+Flow: validate -> preprocess comments -> need flags -> post features -> embeddings (cached per unique text) -> semantic needs -> combined features -> clustering -> profiles -> anomalies -> recommendations -> SQLite -> dashboard/reports.
+Formulas: engagement_rate=(likes+comments+shares)/views; like_to_comment=likes/comments; share_rate=shares/views; comment_rate=comments/views; views_per_engagement=views/engagement; comments_per_day=comments/max(days,1); relative_engagement=engagement_rate/median of peers (content_type+platform, fallback content_type, then all; min 10 peers). Zero or missing denominators give NaN.
+Design choices: pure functions per module; `config.py` for paths; SQLAlchemy for storage; results cached in session state and reloaded from SQLite; optional columns never crash the app (see tests/test_phase2.py).
+Recommendation evidence level: High >= 500 supporting comments, Medium >= 100, Low otherwise. Content-format findings need Kruskal-Wallis p<0.05 and >=10% above the overall median, and are labelled correlational.

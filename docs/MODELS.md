@@ -1,0 +1,8 @@
+# Model explanation
+**Embeddings.** all-MiniLM-L6-v2 (384 dims, CPU). Mostly English-trained, so Roman Urdu quality must be checked: run `python scripts/run_phase3.py transformer`
+and read the similarity table. If same-meaning Roman Urdu/English pairs score low, try `paraphrase-multilingual-MiniLM-L12-v2` (set MULTILINGUAL_MODEL in `embeddings.py`; slower, larger, better coverage). Offline fallback: TF-IDF char n-grams + SVD (handles spelling variants, not meaning: "price" vs "how much" scored 0.02 in my fallback test).
+**Feature space.** PCA(20) on embeddings + 7 need flags + emoji count + post engagement; each block is standardised and divided by sqrt(width) so total variance per block is equal, then weighted (text 1.0, behaviour 1.0, post 0.5).
+**K-Means** chosen k by silhouette (ties -> smaller k), stability by ARI over 5 restarts. **DBSCAN** eps from k-distance percentiles, min_samples=10; on this data it splits by repeated phrase (about 60 clusters) so it is ineligible. **Agglomerative (ward)** fitted on a 3,000 sample then nearest-centroid assignment.
+**Selection rule.** Eligible if 3-12 clusters, <20% noise, largest cluster <70%; rank by silhouette, Davies-Bouldin, stability; K-Means wins unless another algorithm beats its silhouette by >=0.05 (K-Means scales, repeats and can score new comments).
+**Segment names** come from the dominant need in each cluster (>=50% of members), else "Mixed Behaviour"; DBSCAN noise is "Unclassified".
+**Anomalies.** Isolation Forest (4% contamination) AND robust Z >= 3.5 vs posts of the same content type and campaign type (log scale for counts); both must agree. On the injected demo anomalies: precision 0.69, recall 0.86 (seed 42, TF-IDF run). These numbers apply to synthetic data only.
